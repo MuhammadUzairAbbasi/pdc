@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <cstring>
 
-#include "mpi.h"
+#include <mpi.h>
 
 using std::string;
 using std::cout;
