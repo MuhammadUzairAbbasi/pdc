@@ -36,6 +36,7 @@ int read_file(const char *filename) {
     return 0;
 }
 
+
 int print_result(bool has_negative_cycle, int *dist) {
     FILE *outputf = fopen("output.txt", "w");
     if (!has_negative_cycle) {
