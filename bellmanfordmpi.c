@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
 #include <assert.h>
 #include <mpi.h>
 
@@ -54,18 +54,16 @@ int print_result(bool has_negative_cycle, int *dist) {
 }
 
 void bellman_ford(int my_rank, int p, MPI_Comm comm, int n, int *mat, int *dist, bool *has_negative_cycle) {
-   int loc_n; // need a local copy for N
+    int loc_n;
     int loc_start, loc_end;
-    int *loc_mat; //local matrix
-    int *loc_dist; //local distance
+    int *loc_mat;
+    int *loc_dist;
 
-    //step 1: broadcast N
     if (my_rank == 0) {
         loc_n = n;
     }
     MPI_Bcast(&loc_n, 1, MPI_INT, 0, comm);
 
-    //step 2: find local task range
     int ave = loc_n / p;
     loc_start = ave * my_rank;
     loc_end = ave * (my_rank + 1);
@@ -73,16 +71,13 @@ void bellman_ford(int my_rank, int p, MPI_Comm comm, int n, int *mat, int *dist,
         loc_end = loc_n;
     }
 
-    //step 3: allocate local memory
-    loc_mat = (int *) malloc(loc_n * loc_n * sizeof(int));
-    loc_dist = (int *) malloc(loc_n * sizeof(int));
+    loc_mat = (int *)malloc(loc_n * loc_n * sizeof(int));
+    loc_dist = (int *)malloc(loc_n * sizeof(int));
 
-    //step 4: broadcast matrix mat
     if (my_rank == 0)
         memcpy(loc_mat, mat, sizeof(int) * loc_n * loc_n);
     MPI_Bcast(loc_mat, loc_n * loc_n, MPI_INT, 0, comm);
 
-    //step 5: bellman-ford algorithm
     for (int i = 0; i < loc_n; i++) {
         loc_dist[i] = INF;
     }
@@ -96,7 +91,7 @@ void bellman_ford(int my_rank, int p, MPI_Comm comm, int n, int *mat, int *dist,
         loc_iter_num++;
         for (int u = loc_start; u < loc_end; u++) {
             for (int v = 0; v < loc_n; v++) {
-                int weight = loc_mat[utils::convert_dimension_2D_1D(u, v, loc_n)];
+                int weight = loc_mat[convert_dimension_2D_1D(u, v, loc_n)];
                 if (weight < INF) {
                     if (loc_dist[u] + weight < loc_dist[v]) {
                         loc_dist[v] = loc_dist[u] + weight;
@@ -105,18 +100,17 @@ void bellman_ford(int my_rank, int p, MPI_Comm comm, int n, int *mat, int *dist,
                 }
             }
         }
-        MPI_Allreduce(MPI_IN_PLACE, &loc_has_change, 1, MPI_CXX_BOOL, MPI_LOR, comm);
+        MPI_Allreduce(MPI_IN_PLACE, &loc_has_change, 1, MPI_C_BOOL, MPI_LOR, comm);
         if (!loc_has_change)
             break;
         MPI_Allreduce(MPI_IN_PLACE, loc_dist, loc_n, MPI_INT, MPI_MIN, comm);
     }
 
-    //do one more step
     if (loc_iter_num == loc_n - 1) {
         loc_has_change = false;
         for (int u = loc_start; u < loc_end; u++) {
             for (int v = 0; v < loc_n; v++) {
-                int weight = loc_mat[utils::convert_dimension_2D_1D(u, v, loc_n)];
+                int weight = loc_mat[convert_dimension_2D_1D(u, v, loc_n)];
                 if (weight < INF) {
                     if (loc_dist[u] + weight < loc_dist[v]) {
                         loc_dist[v] = loc_dist[u] + weight;
@@ -126,14 +120,12 @@ void bellman_ford(int my_rank, int p, MPI_Comm comm, int n, int *mat, int *dist,
                 }
             }
         }
-        MPI_Allreduce(&loc_has_change, has_negative_cycle, 1, MPI_CXX_BOOL, MPI_LOR, comm);
+        MPI_Allreduce(&loc_has_change, has_negative_cycle, 1, MPI_C_BOOL, MPI_LOR, comm);
     }
 
-    //step 6: retrieve results back
-    if(my_rank == 0)
+    if (my_rank == 0)
         memcpy(dist, loc_dist, loc_n * sizeof(int));
 
-    //step 7: remember to free memory
     free(loc_mat);
     free(loc_dist);
 }
@@ -167,15 +159,5 @@ int main(int argc, char **argv) {
 
     bellman_ford(my_rank, p, comm, N, mat, dist, &has_negative_cycle);
     MPI_Barrier(comm);
-    
-    t2 = MPI_Wtime();
 
-    if (my_rank == 0) {
-        printf("Time(s): %.6f\n", t2 - t1);
-        print_result(has_negative_cycle, dist);
-        free(dist);
-        free(mat);
-    }
-    MPI_Finalize();
-    return 0;
-}
+    t2 = MPI_Wtim
