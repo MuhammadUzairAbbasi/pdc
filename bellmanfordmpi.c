@@ -131,11 +131,12 @@ void bellman_ford(int my_rank, int p, MPI_Comm comm, int n, int *mat, int *dist,
 }
 
 int main(int argc, char **argv) {
-    if (argc <= 1) {
-        abort_with_error_message("INPUT FILE WAS NOT FOUND!");
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
+        exit(EXIT_FAILURE);
     }
-    const char *filename = argv[1];
 
+    const char *filename = argv[1];
     int *dist;
     bool has_negative_cycle = false;
 
@@ -149,10 +150,12 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(comm, &my_rank);
 
     if (my_rank == 0) {
-        assert(read_file(filename) == 0);
+        if (read_file(filename) != 0) {
+            fprintf(stderr, "Error reading input file.\n");
+            MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+        }
         dist = (int *)malloc(sizeof(int) * N);
     }
-
     double t1, t2;
     MPI_Barrier(comm);
     t1 = MPI_Wtime();
