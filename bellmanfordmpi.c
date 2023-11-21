@@ -160,4 +160,14 @@ int main(int argc, char **argv) {
     bellman_ford(my_rank, p, comm, N, mat, dist, &has_negative_cycle);
     MPI_Barrier(comm);
 
-    t2 = MPI_Wtim
+    t2 = MPI_Wtime();
+
+    if (my_rank == 0) {
+        printf("Time(s): %.6f\n", t2 - t1);
+        print_result(has_negative_cycle, dist);
+        free(dist);
+        free(mat);
+    }
+    MPI_Finalize();
+    return 0;
+}
