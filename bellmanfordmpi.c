@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
     t2 = MPI_Wtime();
 
     if (my_rank == 0) {
-        printf("Time(s): %.6f\n", t2 - t1);
+        printf("Time(m): %.6f\n", (t2 - t1)/60);
         print_result(has_negative_cycle, dist);
         free(dist);
         free(mat);
