@@ -197,7 +197,7 @@ int main(int argc, char **argv) {
                + end_wall_time_t.tv_usec - start_wall_time_t.tv_usec) / 1000.0;
 
     std::cerr.setf(std::ios::fixed);
-    std::cerr << std::setprecision(6) << "Time(s): " << (ms_wall / 1000.0) << endl;
+    std::cerr << std::setprecision(6) << "Time(s): " << (ms_wall / 1000.0)/60 << endl;
     utils::print_result(has_negative_cycle, dist);
     free(dist);
     free(utils::mat);
