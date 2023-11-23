@@ -55,7 +55,7 @@ namespace utils {
     }
 
     int print_result(bool has_negative_cycle, int *dist) {
-        std::ofstream outputf("output.txt", std::ofstream::out);
+        std::ofstream outputf("openmp_output.txt", std::ofstream::out);
         if (!has_negative_cycle) {
             for (int i = 0; i < N; i++) {
                 if (dist[i] > INF)
