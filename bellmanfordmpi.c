@@ -38,7 +38,7 @@ int read_file(const char *filename) {
 
 
 int print_result(bool has_negative_cycle, int *dist) {
-    FILE *outputf = fopen("output.txt", "w");
+    FILE *outputf = fopen("mpioutput.txt", "w");
     if (!has_negative_cycle) {
         for (int i = 0; i < N; i++) {
             if (dist[i] > INF) {
